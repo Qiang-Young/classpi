@@ -20,11 +20,12 @@ public class Users {
     private String school;
     private String court;
     private String speciality;
-    private String myclass;
+    private String myclasses;
     private String grade;
     private String ktpnum;
     private String role;
     private String phone;
     private String email;
     private String wechat;
+    private String admission;
 }
