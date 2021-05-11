@@ -255,6 +255,7 @@ export default {
     this.userId = this.$route.query.userId
     this.classnum = this.$route.query.classnum
     const _this = this
+
     axios.get('http://localhost:8181/class/findall').then(function (resp) {
       for (let i = 0; i < resp.data.length;i++){
         if(_this.classnum == resp.data[i].classnum){
@@ -263,6 +264,7 @@ export default {
         }
       }
     })
+    alert(this.c)
   }
 }
 </script>

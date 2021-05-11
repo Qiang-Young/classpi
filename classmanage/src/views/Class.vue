@@ -382,7 +382,6 @@ export default {
       }
       _this.userclass.classnum = res.data.classnum.split(',');
       _this.classLen = res.data.length
-
       axios.get('http://localhost:8181/class/findall').then(function (resp) {
         _this.classinformation = resp.data
         let num = 0
