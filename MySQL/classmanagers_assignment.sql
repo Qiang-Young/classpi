@@ -1,0 +1,1 @@
+INSERT INTO classmanagers.assignment (deadline, classnum, assignmentname, assignmentid, `explain`) VALUES ('2020-11-12', '459799', '好好学习', '147258', '一定要好好学习');
