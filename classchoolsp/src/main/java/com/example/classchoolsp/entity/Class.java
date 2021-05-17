@@ -9,8 +9,7 @@ import javax.persistence.Id;
 @Data
 public class Class {
     @Id
-    private Integer classid;
-    private String classnum;
+    private String classid;
     private String classname;
     private String classtime;
     private String manager;

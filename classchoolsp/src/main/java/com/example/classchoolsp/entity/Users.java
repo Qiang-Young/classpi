@@ -12,7 +12,7 @@ import javax.persistence.Id;
 public class Users {
     @Id
 //    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
+    private String id;
     private String password;
     private String classnum;
     private String username;
@@ -28,4 +28,5 @@ public class Users {
     private String email;
     private String wechat;
     private String admission;
+    private String userface;
 }

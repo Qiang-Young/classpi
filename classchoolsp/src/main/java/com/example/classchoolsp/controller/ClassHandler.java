@@ -22,7 +22,7 @@ public class ClassHandler {
         return classRepository.findAll();
     }
     @GetMapping("/findById/{id}")
-    public Class findById(@PathVariable("id") Integer id){
+    public Class findById(@PathVariable("id") String id){
         return classRepository.findById(id).get();
     }
 
