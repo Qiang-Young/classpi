@@ -16,7 +16,7 @@
 <!--            <el-avatar icon="el-icon-user-solid"></el-avatar>-->
 
             <el-dropdown trigger="click">
-              <img src="../assets/class/tou.png" width="32px" height="32px">
+              <img :src="userclass.userface"style="border-radius: 50px" width="32px" height="32px">
               <el-dropdown-menu slot="dropdown">
                 <el-dropdown-item icon="el-icon-arrow-down">开通vip</el-dropdown-item>
                 <el-dropdown-item icon="el-icon-paperclip">机构用户认证</el-dropdown-item>
@@ -48,10 +48,14 @@
         <div v-if="this.searchlist.length == 0" style="width: 1150px;margin: 0 auto;margin-top: 10px">
           <el-collapse v-model="activityName">
             <el-collapse-item  title="我的所有课程" name="1" >
+
               <div >
                 <el-row :gutter="20" align="center" style="margin-left: 0">
-                  <el-col v-for="(item,key) in userclass.classnum" :span="1" style="height: 310px;width: 259px;box-shadow: 1px 4px 12px 0 rgba(0, 0, 0, 0.1)" >
-                    <div @click="tooneclass(classinformation[key].classnum)" :style="backimg((key)%3)" style="height: 150px;border-radius: 10px 10px 0px 0px;text-align: left">
+                  <el-col v-for="(item,key) in userclass.classnum" :span="1"
+                          style="height: 310px;width: 259px;box-shadow: 1px 4px 12px 0 rgba(0, 0, 0, 0.1)" >
+                    <div @click="tooneclass(classinformation[key].classid)"
+                         :style="backimg((key)%3)"
+                         style="height: 150px;border-radius: 10px 10px 0px 0px;text-align: left">
                       <div style="margin-left: 15px">
                         <span style="color: darkgray;font-size: 5px">{{classinformation[key].classtime}}</span>
                       </div>
@@ -61,7 +65,7 @@
                       <div style="margin-left: 20px;margin-top: 20px">
                         <img src="../assets/class/ma.svg" width="13" height="13" >
                         <span style="color: beige">课堂码:</span>
-                        <span style="color: beige">{{classinformation[key].classnum}}</span>
+                        <span style="color: beige">{{classinformation[key].classid}}</span>
                       </div>
                     </div>
                     <div style="border-radius: 2px;text-align: left;height: 80px">
@@ -87,7 +91,7 @@
                           <img style="margin-left: 10px" src="../assets/class/etc.svg" height="12" width="12">
                           <el-dropdown-menu slot="dropdown" trigger="click">
                             <div>
-                              <el-button @click="refundclass(classinformation[key].classnum)" target="_blank" >退课</el-button>
+                              <el-button @click="refundclass(classinformation[key].classid)" target="_blank" >退课</el-button>
                             </div>
                             <div>
                               <el-button @click="interfile" target="_blank" >归档</el-button>
@@ -111,7 +115,7 @@
               <div >
                 <el-row :gutter="20" align="center" style="margin-left: 0">
                   <el-col v-for="(item,key) in this.searchlist" :span="1" style="height: 310px;width: 259px;box-shadow: 1px 4px 12px 0 rgba(0, 0, 0, 0.1)" >
-                    <div @click="tooneclass(item.classnum)" :style="backimg((key)%3)" style="height: 150px;border-radius: 10px 10px 0px 0px;text-align: left">
+                    <div @click="tooneclass(item.classid)" :style="backimg((key)%3)" style="height: 150px;border-radius: 10px 10px 0px 0px;text-align: left">
                       <div style="margin-left: 15px">
                         <span style="color: darkgray;font-size: 5px">{{item.classtime}}</span>
                       </div>
@@ -121,7 +125,7 @@
                       <div style="margin-left: 20px;margin-top: 20px">
                         <img src="../assets/class/ma.svg" width="13" height="13" >
                         <span style="color: beige">课堂码:</span>
-                        <span style="color: beige">{{item.classnum}}</span>
+                        <span style="color: beige">{{item.classid}}</span>
                       </div>
                     </div>
                     <div style="border-radius: 2px;text-align: left;height: 80px">
@@ -147,7 +151,7 @@
                           <img style="margin-left: 10px" src="../assets/class/etc.svg" height="12" width="12">
                           <el-dropdown-menu slot="dropdown" trigger="click">
                             <div>
-                              <el-button @click="refundclass(item.classnum)" target="_blank" >退课</el-button>
+                              <el-button @click="refundclass(item.classid)" target="_blank" >退课</el-button>
                             </div>
                             <div>
                               <el-button @click="interfile" target="_blank" >归档</el-button>
@@ -177,7 +181,7 @@
 export default {
   data () {
     return{
-      searchresult: '',
+      searchresult: 'no',
       searchlist:[],
       activityName: '1',
       activityName2: '2',
@@ -188,6 +192,7 @@ export default {
       //用户信息
       userclass:'',
       classLen: '',
+      classid:'',
       classsum:'',
       classbegin: true,
       logo1Url: require('../assets/homepageimg/logo.png'),
@@ -200,7 +205,7 @@ export default {
       let search = this.search;
       for (let i = 0;i < this.userclass.classnum.length; i++){
         if (search.length > 0) {
-          if (this.classinformation[i].classnum.indexOf(search) != -1 || this.classinformation[i].classname.indexOf(search) != -1) {
+          if (this.classinformation[i].classid.indexOf(search) != -1 || this.classinformation[i].classname.indexOf(search) != -1) {
             this.searchlist[this.searchlist.length] = this.classinformation[i]
             this.searchresult = "yes"
           }
@@ -209,9 +214,16 @@ export default {
             type: 'warning',
             message: '请输入关键词搜索'
           });
-          break
+          return
         }
       }
+      if(this.searchresult != "yes"){
+        this.$message({
+          type: 'warning',
+          message: '没有该课程'
+        });
+      }
+      this.searchresult = "no"
     },
     backimg(index){
       index = index + 1
@@ -228,7 +240,7 @@ export default {
         path: '/Oneclass',
         query: {
           userId: this.userId,
-          classnum: num
+          classid: num
         }
       })
     },
@@ -267,68 +279,69 @@ export default {
         cancelButtonText: '取消',
         inputPattern: /^[a-zA-Z0-9]{5,8}$/,
         inputErrorMessage: '请输入5-8位由字母或者数字组成的课堂号'
-      }).then(({ value }) => {
+      }).then(({value}) => {
         const _this = this
-        axios.get('http://localhost:8181/class/findall').then(function (res){
-          _this.classsum = res.data
-          let num = 0
-          let num2 = 0
-          for(let k = 0;k <= _this.classsum.length-1;k++){
-            if(value == _this.classsum[k].classnum){
-              num = num + 1
-              axios.get('http://localhost:8181/users/findById/' + _this.userId).then(function (resp){
-                _this.userclass = resp.data
-                if(_this.userclass.classnum < 2){
-                  _this.userclass.classnum = value
-                  axios.put('http://localhost:8181/users/update', _this.userclass).then(function (rsp) {
-                  })
-                  _this.$message({
-                    type: 'success',
-                    message: '加入课程成功'
-                  });
-                  window.location.reload();
-                  return
-                }
-                _this.userclass.classnum = resp.data.classnum.split(',')
-                for (let i = 0; i <= _this.userclass.classnum.length-1;i++) {
-                  if (value == _this.userclass.classnum[i]) {
-                    _this.$message({
-                      type: 'warning',
-                      message: '您已经加入了该课程'
-                    });
-                  } else if (value != _this.userclass.classnum[i]) {
-                    num2 = num2 + 1
-                  }
-                }
-                if(num2 == _this.userclass.classnum.length) {
-                  _this.userclass.classnum[_this.userclass.classnum.length] = value
-                  _this.userclass.classnum = _this.userclass.classnum.join(',')
-                  axios.put('http://localhost:8181/users/update', _this.userclass).then(function (rsp) {
-                  })
-                  _this.$message({
-                    type: 'success',
-                    message: '加入课程成功'
-                  });
-                  window.location.reload();
-                }
-
-              })
-            }
-            }
-          if(num == 0){
+        axios.get('http://localhost:8181/class/findById/' + value).then(function (res){
+          if(res == null){
             _this.$message({
               type: 'error',
               message: '该课程不存在'
             });
+          } else {
+            if (_this.userclass.classnum == null){
+              _this.userclass.classnum = value.toString()
+              axios.put('http://localhost:8181/users/update', _this.userclass).then(function (rsp) {
+              })
+              _this.$message({
+                type: 'success',
+                message: '加入课程成功'
+              });
+              window.location.reload();
+              return
+            }
+            if(_this.userclass.classnum.length == 0){
+              _this.userclass.classnum = value.toString()
+              axios.put('http://localhost:8181/users/update', _this.userclass).then(function (rsp) {
+              })
+              _this.$message({
+                type: 'success',
+                message: '加入课程成功'
+              });
+              window.location.reload();
+              return
+            }
+            let num = 0
+            for(let i = 0; i < _this.userclass.classnum.length;i++){
+              if(value == _this.userclass.classnum[i]){
+                _this.$message({
+                  type: 'warning',
+                  message: '您已经加入了该课程'
+                });
+                return;
+              }
+              num = num + 1
+            }
+            if(num == _this.userclass.classnum.length){
+              _this.userclass.classnum[num] = value
+              _this.userclass.classnum = _this.userclass.classnum.join(',')
+              axios.put('http://localhost:8181/users/update', _this.userclass).then(function (rsp) {
+              })
+              _this.$message({
+                type: 'success',
+                message: '加入课程成功'
+              });
+              window.location.reload();
+            }
           }
         })
 
-      }).catch(() => {
-        this.$message({
-          type: 'info',
-          message: '取消输入'
+      })
+        .catch(() => {
+          this.$message({
+            type: 'info',
+            message: '取消输入'
+          });
         });
-      });
     },
     refundclass(classnum){
       this.$confirm('您确定退选该课程吗？', '提示', {
@@ -374,31 +387,21 @@ export default {
     this.$parent.classbegin = true;
     this.userId = this.$route.query.userId
     const _this = this
-    axios.get('http://localhost:8181/users/findById/' + _this.userId).then(function (res){
+    axios.get('http://localhost:8181/users/findById/' + _this.userId).then(function (res) {
       _this.userclass = res.data
-
-      if(_this.userclass.classnum.length < 2){
+      if(_this.userclass.classnum == null){
         return
       }
-      _this.userclass.classnum = res.data.classnum.split(',');
-      _this.classLen = res.data.length
-      axios.get('http://localhost:8181/class/findall').then(function (resp) {
-        _this.classinformation = resp.data
-        let num = 0
-        for(let i = 0; i <= resp.data.length-1;i++){
-          _this.classinformation[i].assignment = resp.data[i].assignment.split(',')
-          _this.classinformation[i].assignment[0] = _this.classinformation[i].assignment[_this.classinformation[i].assignment.length-2]
-          _this.classinformation[i].assignment[1] = _this.classinformation[i].assignment[_this.classinformation[i].assignment.length-1]
-          for(let j = 0;j <= _this.userclass.classnum.length-1;j++){
-            if(_this.classinformation[i].classnum == _this.userclass.classnum[j]) {
-              _this.classinformation[num] = _this.classinformation[i]
-              num = num + 1
-              break
-            }
-          }
-        }
-
-      })
+      if(_this.userclass.classnum.length == 0){
+        return
+      }
+      _this.userclass.classnum = res.data.classnum.split(',')
+      for(let i = 0; i < _this.userclass.classnum.length; i++){
+        axios.get('http://localhost:8181/class/findById/'+_this.userclass.classnum[i]).then(function (resp) {
+          _this.classinformation[i] = resp.data
+          _this.classinformation[i].assignment = resp.data.assignment.split(',')
+        })
+      }
     })
   }
 }

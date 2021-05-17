@@ -28,7 +28,7 @@
             <i class="el-icon-message-solid" style="color: #303133"></i>
           </el-breadcrumb-item>
           <el-dropdown trigger="click">
-            <img src="../assets/class/tou.png" width="32px" height="32px" style="margin-top: 10px">
+            <img :src="userclass.userface" width="32px" height="32px" style="margin-top: 10px;border-radius: 50px">
             <el-dropdown-menu slot="dropdown">
               <el-dropdown-item icon="el-icon-arrow-down">开通vip</el-dropdown-item>
               <el-dropdown-item icon="el-icon-paperclip">机构用户认证</el-dropdown-item>
@@ -47,11 +47,26 @@
           <el-row gutter="">
             <el-col span="3" style="margin-top: 20px;margin-left: 20px">
               <div>
-                <img src="../assets/class/tou.png" height="93px" width="93px">
+                <img @click="editmypic" :src="userclass.userface" height="100px" style="border-radius: 50px" width="100px">
+                <el-dialog center title="设置头像" width="500px" :visible.sync="picedit">
+                  <el-upload
+                      action="http://localhost:8181/users/userface"
+                      :data="this.userclass"
+                      :show-file-list="false"
+                      :on-success="handleAvatarSuccess"
+                      :before-upload="beforeAvatarUpload">
+                    <img  align="center" style="border-radius: 50px;margin-left: 130px;height: 200px;width: 200px"
+                         title="点击修改头像" :src="userclass.userface" alt="">
+                  </el-upload>
+                  <span slot="footer" class="dialog-footer">
+                    <el-button @click="exiteditmypic">取 消</el-button>
+                    <el-button type="primary" @click="savemypic">确 定</el-button>
+                  </span>
+                </el-dialog>
               </div>
             </el-col>
             <el-col span="4">
-              <div style="margin-top: 20px">
+              <div style="margin-top: 40px">
                 <span v-if="this.editname.length > 0" style="font-size: 25px">{{this.userclass.username}}</span>
                 <span v-if="this.editname.length == 0" style="font-size: 25px">您还未设置姓名</span>
               </div>
@@ -72,7 +87,7 @@
                   <el-container>
                     <div style="margin-top: 20px;margin-left: 20px">
                       <span @click="edit"> 基础信息</span>
-                      <a v-if="this.baseflag == 'scan' " style="margin-left: 750px;color: blue" @click="edit" >编辑</a>
+                      <el-button type="text" v-if="this.baseflag == 'scan' "  style="font-size: 20px;margin-left: 730px" @click="edit" >编辑</el-button>
                       <el-button v-if="this.baseflag == 'edit' " style="margin-left: 650px" @click="exitedit">取消</el-button>
                       <el-button v-if="this.baseflag == 'edit' " type="primary" @click="save">保存</el-button>
                     </div>
@@ -173,18 +188,37 @@
                         <i v-if="this.editrole.length == 0 && this.roleedit == false"
                            class="el-icon-warning" style="color: #E6A23C;margin-left: 90px">未完善</i>
                         <span v-if="this.roleedit == false" style="margin-left: 90px;color: #909399">{{this.userclass.role}}</span>
-                        <span v-if="this.roleedit == false" @click="editmyrole" style="color: dodgerblue;font-size: 15px;margin-left: 460px">去设置</span>
-                        <el-button v-if="this.roleedit == true" size="small" @click="exiteditrole">取消</el-button>
+                        <el-button type="text" v-if="this.roleedit == false" @click="editmyrole" style="font-size: 15px;margin-left: 580px">去设置</el-button>
+                        <el-radio-group v-if="this.roleedit == true" v-model="editrole" style="margin-left: 90px">
+                          <el-radio label="老师"></el-radio>
+                          <el-radio label="学生"></el-radio>
+                        </el-radio-group>
+                        <el-button v-if="this.roleedit == true" style="margin-left: 400px" size="small" @click="exiteditrole">取消</el-button>
                         <el-button v-if="this.roleedit == true" type="primary" @click="saverole" size="small">确定</el-button>
                         <el-divider></el-divider>
                       </div>
                       <div>
                         <span style="width: 100px">手机号</span>
                         <i v-if="this.editphone.length == 0" class="el-icon-warning" style="color: #E6A23C;margin-left: 105px">未完善</i>
-                        <span  @click="editmyphone" style="color: dodgerblue;font-size: 15px;margin-left: 480px">更换手机号</span>
+<!--                        <span  @click="this.editmyphone = true" style="color: dodgerblue;font-size: 15px;margin-left: 480px">更换手机号</span>-->
+                        <span style="margin-left: 100px;width:200px;color: #909399">{{this.userclass.phone}}</span>
+                        <el-button type="text" @click="editmyphone" style="font-size: 15px;margin-left: 440px">更换手机号</el-button>
+                        <el-dialog title="修改手机号" width="600px"  :visible.sync="myphoneedit">
+                          <div>
+                            <span style="margin-left: 20px">原手机号:</span>
+                            <span style="margin-left: 80px">{{this.userclass.phone}}</span>
+                          </div>
+                          <div style="margin-top: 40px">
+                            <span style="margin-left: 20px">手机号:</span>
+                            <el-input v-model="editnewphone" style="width: 200px;margin-left: 100px"></el-input>
+                          </div>
+                          <div slot="footer" class="dialog-footer">
+                            <el-button @click="exiteditmyphone">取 消</el-button>
+                            <el-button type="primary" @click="savemyphone">确 定</el-button>
+                          </div>
+                        </el-dialog>
                         <span  style="font-size: 15px">    |    </span>
                         <span  style="color: dodgerblue;font-size: 15px">解绑</span>
-                        <span style="margin-left: 100px;color: #909399">{{this.userclass.phone}}</span>
                         <el-divider></el-divider>
                       </div>
                       <div>
@@ -238,10 +272,15 @@
   </div>
 </template>
 
+
+
 <script>
 export default {
   data() {
     return{
+      // imageUrl: '',
+      disabled: false,
+      editnewphone:'',
       editname: '',
       editnumber: '',
       editschool: '',
@@ -263,15 +302,56 @@ export default {
       //基础信息状态
       baseflag: "scan",
       roleedit: false,
+      myphoneedit: false,
+      picedit: false,
     }
   },
   methods:{
-    editmyphone(){},
+    handleAvatarSuccess(){
+      let _this = this
+      axios.get('http://localhost:8181/users/findById/' + _this.userId).then(function (res) {
+        _this.userclass.userface = res.data.userface
+      })
+    },
+    beforeAvatarUpload(file){
+      const isJpg = file.type === 'image/jpeg' || file.type === 'image/png'
+      const isLt5M = file.size / 1024 / 1024 < 5;
+      if(!isJpg){
+        this.$message.error('只能上传jpg和png图片');
+      }
+      if (!isLt5M) {
+        this.$message.error('上传头像图片大小不能超过 5MB!');
+      }
+      return isJpg && isLt5M;
+    },
+    editmypic(){
+      this.picedit = true
+    },
+    exiteditmypic(){
+      this.picedit = false
+
+    },
+    savemypic(){
+      this.picedit = false
+    },
+    exiteditmyphone(){
+      this.myphoneedit = false
+    },
+    savemyphone(){
+      this.myphoneedit = false
+    },
+    editmyphone(){
+      this.myphoneedit = true
+    },
     exitedit(){
       this.baseflag = "scan"
     },
     saverole(){
+      this.userclass.role = this.editrole
+      axios.put('http://localhost:8181/users/update',this.userclass).then(function (resp) {
 
+      })
+      this.roleedit = false
     },
     exiteditrole(){
       this.roleedit = false

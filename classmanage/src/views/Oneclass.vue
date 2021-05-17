@@ -45,7 +45,7 @@
           <div style="margin-left: 20px;margin-top: 30px">
             <img src="../assets/class/ma.svg" width="13" height="13" >
             <span style="color: beige">加课码:</span>
-            <span style="color: beige">{{this.classinformation.classnum}}</span>
+            <span style="color: beige">{{this.classinformation.classid}}</span>
             <span style="color: beige;margin-left: 20px" >已有57人加入</span>
           </div>
           <div style="margin-top: 20px;margin-left: 20px">
@@ -253,18 +253,13 @@ export default {
     this.$parent.classbegin = false;
     this.$parent.success = false;
     this.userId = this.$route.query.userId
-    this.classnum = this.$route.query.classnum
+    this.classid = this.$route.query.classid
     const _this = this
 
-    axios.get('http://localhost:8181/class/findall').then(function (resp) {
-      for (let i = 0; i < resp.data.length;i++){
-        if(_this.classnum == resp.data[i].classnum){
-          _this.classinformation = resp.data[i]
-          _this.classinformation.assignment = resp.data[i].assignment.split(',')
-        }
-      }
+    axios.get('http://localhost:8181/class/findById/' + _this.classid).then(function (resp) {
+      _this.classinformation = resp.data
+      _this.classinformation.assignment = resp.data.assignment.split(',')
     })
-    alert(this.c)
   }
 }
 </script>
